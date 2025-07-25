@@ -16,7 +16,7 @@ def generate_page(from_path, template_path, dest_path, basepath):
     template_file = template_file.replace("{{ Title }}", title)
     template_file = template_file.replace("{{ Content }}", content)
     template_file = template_file.replace('href="/', f'href="{basepath}')
-    template_file = template_file.replace('src="/', f'src="/{basepath}')
+    template_file = template_file.replace('src="/', f'src="{basepath}')
     os.makedirs(dest_path[:dest_path.rfind("/")], exist_ok=True)
     with open(dest_path, 'w') as file:
         file.write(template_file)
