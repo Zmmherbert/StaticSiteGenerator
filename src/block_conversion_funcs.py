@@ -1,5 +1,7 @@
 from enum import Enum
 import re
+from htmlnode import HTMLNode
+from text_node_funcs import *
 
 class BlockType(Enum):
     PARAGRAPH = "paragraph"
@@ -28,20 +30,36 @@ def block_to_block_type(block):
     
 def markdown_to_html_node(markdown):
     blocks = markdown_to_blocks(markdown)
+    block_nodes = []
     for block in blocks:
         block_type = block_to_block_type(block)
         match block_type:
             case BlockType.HEADING:
-                pass
+                header_num = len(block.split(" ")[0])
+                block_nodes.append(ParentNode(f"h{header_num}", text_to_children(block[header_num + 1:]), None))
             case BlockType.CODE:
-                pass
+                block_nodes.append(ParentNode("pre", [text_node_to_html_node(TextNode(block[4:len(block) - 3], TextType.CODE, None))], None))
             case BlockType.QUOTE:
-                pass
+                block_nodes.append(ParentNode("blockquote", text_to_children(re.sub(r"^>|\n>|\n", "", block).strip()), None))
             case BlockType.UNORDERED_LIST:
-                pass
+                list_nodes = []
+                for line in block.split("\n"):
+                    list_nodes.append(ParentNode("li", text_to_children(line[2:]), None))
+                block_nodes.append(ParentNode("ul", list_nodes, None))
             case BlockType.ORDERED_LIST:
-                pass
+                list_nodes = []
+                for line in block.split("\n"):
+                    list_nodes.append(ParentNode("li", text_to_children(line[3:]), None))
+                block_nodes.append(ParentNode("ol", list_nodes, None))
             case BlockType.PARAGRAPH:
-                pass
+                block_nodes.append(ParentNode("p", text_to_children(block.replace("\n", " ")), None))
             case _:
                 pass
+    return ParentNode("div", block_nodes, None)
+
+def text_to_children(text):
+    text_nodes = text_to_textnodes(text)
+    html_nodes = []
+    for node in text_nodes:
+        html_nodes.append(text_node_to_html_node(node))
+    return html_nodes

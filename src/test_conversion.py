@@ -29,7 +29,7 @@ class TestConverion(unittest.TestCase):
         node = TextNode("Hello", TextType.IMAGE, "https://www.google.com")
         html_node = text_node_to_html_node(node)
         self.assertEqual(html_node.children, None)
-        self.assertEqual(html_node.value, None)
+        self.assertEqual(html_node.value, "")
         self.assertEqual(html_node.tag, "img")
         self.assertEqual(html_node.props, {"src": "https://www.google.com", "alt": "Hello"})
 
